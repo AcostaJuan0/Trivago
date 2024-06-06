@@ -36,5 +36,6 @@ Todo lo anterior se lograra mediante el lenguaje de programación de Python apli
 # Actividades realizadas por integrante
 Web scraping: Acosta Cuevas Juan Felipe
 Limpieza de datos:
+Trejo Silva Jesus Ignacio & Santiago Gonzalez Rodolfo Goku
 Creación de base de datos: 
 Creación de dashboards:

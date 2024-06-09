@@ -19,6 +19,7 @@ hoteles = {
     "Servicios": []
 }
 
+
 def configurar_navegador():
     # Configuración del WebDriver
     s = Service(ChromeDriverManager().install())
@@ -79,59 +80,65 @@ def extraer_datos(navegador, num_repeticiones):
         hotel_elements = soup.find_all("li", {"data-testid": "accommodation-list-element"})
 
         # Ciclo en donde se obtienen los elementos y se agregan al diccionario
-        for hotel_element in hotel_elements:
-            # Nombre
-            hotel_name_tag = hotel_element.find("span", {"itemprop": "name"})
-            if hotel_name_tag is not None:
-                hotel_name = hotel_name_tag.get("title") or hotel_name_tag.text
-                hoteles["Nombre"].append(hotel_name)
-                print(hotel_name)
-            else:
-                hoteles["Nombre"].append("Nombre no encontrado")
+    for hotel_element in hotel_elements:
+        # Nombre
+        hotel_name_tag = hotel_element.find("span", {"itemprop": "name"})
+        if hotel_name_tag is not None:
+            hotel_name = hotel_name_tag.get("title") or hotel_name_tag.text
+            hoteles["Nombre"].append(hotel_name)
+            print(hotel_name)
+        else:
+            hoteles["Nombre"].append("Sin nombre")            # Modifica
 
-            # Estrellas
-            star_elements = hotel_element.find_all("span", {"data-testid": "star"})
+        # Estrellas
+        star_elements = hotel_element.find_all("span", {"data-testid": "star"})
+        if star_elements is not None:                         # Agrega
             star_count = len(star_elements)
-            hoteles["Estrellas"].append(star_count)
-            print(star_count)
+            estrellas = int(star_count)                       # Agrega
+            hoteles["Estrellas"].append(estrellas)            # Modifica
 
-            # Ciudad
-            city_tag = hotel_element.find("span", {"class": "block text-left w-11/12 text-m"})
-            if city_tag is not None:
-                city = city_tag.text
-                hoteles["Ciudad"].append(city)
-                print(city)
+        else:
+            hoteles["Estrellas"].append(0)                    # Agrega              # Modifica
+
+        # Ciudad
+        city_tag = hotel_element.find("span", {"class": "block text-left w-11/12 text-m"})
+        if city_tag is not None:
+            city = city_tag.text
+            hoteles["Ciudad"].append(city)
+        else:
+            hoteles["Ciudad"].append("Sin Ciudad")             # Modifica
+
+        # Calificación
+        rating_tag = hotel_element.find("span", {"itemprop": "ratingValue"})
+        if rating_tag is not None:
+            rating = rating_tag.text
+            calificacion = float(rating)                       # Agrega
+            hoteles["Calificacion"].append(calificacion)       # Modifica
+        else:
+            hoteles["Calificacion"].append(0)                  # Modifica
+
+        # Número de reseñas
+        reviews_meta = hotel_element.find("meta", {"itemprop": "ratingCount"})
+        if reviews_meta is not None:
+            reviews = reviews_meta["content"]
+            resenas = int(reviews)                             # Agrega
+            hoteles["Numero de reseñas"].append(resenas)       # Modifica
+        else:
+            hoteles["Numero de reseñas"].append(0)             # Modifica
+
+        # Precio                                              # Agrega
+        try:
+            price_tag = hotel_element.find("span", {"data-testid": "recommended-price"})
+            if price_tag is not None:
+                price = price_tag.text
+                price = price.lstrip("$")                     # Agrega
             else:
-                hoteles["Ciudad"].append("Ciudad no encontrada")
-
-            # Calificación
-            rating_tag = hotel_element.find("span", {"itemprop": "ratingValue"})
-            if rating_tag is not None:
-                rating = rating_tag.text
-                hoteles["Calificacion"].append(rating)
-                print(rating)
-            else:
-                hoteles["Calificacion"].append("Calificación no encontrada")
-
-            # Número de reseñas
-            reviews_meta = hotel_element.find("meta", {"itemprop": "ratingCount"})
-            if reviews_meta is not None:
-                reviews = reviews_meta["content"]
-                hoteles["Numero de reseñas"].append(reviews)
-            else:
-                hoteles["Numero de reseñas"].append("Reseñas no encontradas")
-
-            try:
-                price_tag = hotel_element.find("span", {"data-testid": "recommended-price"})
-                if price_tag is not None:
-                    price = price_tag.text
-                else:
-                    price = "Sin precio"
-            except Exception as e:
-                print(f"Error al obtener el precio: {e}")
-                price = "Sin precio"
-            hoteles["Precio por noche"].append(price)
-            print(price)
+                price = 0                                     # Modifica
+        except Exception as e:
+            print(f"Error al obtener el precio: {e}")
+            price = 0                                         # Modifica
+        precio = int(price)                                   # Agrega
+        hoteles["Precio por noche"].append(precio)            # Modifica
 
         # Encuentra y hace clic en todos los botones donde se despliega info
         botones_info = navegador.find_elements(By.XPATH, '//button[@data-testid="distance-label-section"]')
@@ -208,7 +215,7 @@ def extraer_datos(navegador, num_repeticiones):
 
     # Crea el DataFrame y guarda los datos en un archivo CSV
     df = pd.DataFrame(hoteles)
-    df.to_csv("C:/Users/Felip/OneDrive/Escritorio/DataFrame/hoteles.csv", sep=";")
+    df.to_csv("C:/Users/sgoku/OneDrive/Escritorio/DatosClean/hoteles.csv", sep=";")
     print(df)
 
 # Ejecucion del codigo

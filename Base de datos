@@ -1,0 +1,66 @@
+create database Trivago;
+use trivago;
+
+create table Hoteles (
+id_hotel int auto_increment primary key,
+nombre_hotel VARCHAR (255) NOT NULL,
+estrellas_hotel INT NOT NULL,
+ciudad VARCHAR(255) NOT NULL,
+direccion Varchar(255) NOT NULL,
+precio_por_noche DECIMAL(10,2) NOT NULL 
+);
+
+
+create table Opiniones (
+id_opiniones int auto_increment primary key,
+id_hotel INT NOT NULL,
+calificacion DECIMAL (10,2),
+numero_de_resenas INT NOT NULL,
+foreign key (id_hotel) references Hoteles (id_hotel) 
+);
+
+create table Servicio (
+id_servicio int auto_increment primary key,
+id_hotel INT NOT NULL,
+servicios_destacados varchar(1600) NOT NULL,
+foreign key (id_hotel) references Hoteles (id_hotel));
+
+DELIMITER //
+
+CREATE PROCEDURE insert_id(
+    IN nombre_hotel_insertar VARCHAR(255),
+    IN calificacion_insertar DECIMAL(10,2),
+    IN numero_de_resenas_insertar INT
+)
+BEGIN
+    -- Insertar en la tabla Opiniones
+    INSERT INTO Opiniones (id_hotel, calificacion, numero_de_resenas)
+    SELECT id_hotel, calificacion_insertar, numero_de_resenas_insertar
+    FROM Hoteles
+    WHERE nombre_hotel = nombre_hotel_insertar
+    LIMIT 1;
+END//
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE insert_servicio(
+    IN nombre_hotel_insertar VARCHAR(255),
+    IN servicio_insertar VARCHAR(255)
+)
+BEGIN
+    -- Insertar en la tabla Servicio
+    INSERT INTO Servicio (id_hotel, servicios_destacados)
+    SELECT id_hotel, servicio_insertar
+    FROM Hoteles
+    WHERE nombre_hotel = nombre_hotel_insertar
+    LIMIT 1;
+END//
+
+DELIMITER ;
+
+
+
+
+
